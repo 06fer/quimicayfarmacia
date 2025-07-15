@@ -1,6 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
   const approved = JSON.parse(localStorage.getItem("approvedCourses") || "[]");
   const courses = document.querySelectorAll(".course");
+  const resetButton = document.getElementById("reset-button");
+  const progressText = document.getElementById("progress-count");
 
   function updateLocks() {
     courses.forEach(course => {
@@ -8,6 +10,12 @@ document.addEventListener("DOMContentLoaded", () => {
       const isLocked = prereqs.length > 0 && !prereqs.every(p => approved.includes(p));
       course.classList.toggle("locked", isLocked);
     });
+  }
+
+  function updateProgress() {
+    const total = courses.length;
+    const completed = approved.length;
+    progressText.textContent = `Ramos aprobados: ${completed} de ${total}`;
   }
 
   courses.forEach(course => {
@@ -33,9 +41,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
       localStorage.setItem("approvedCourses", JSON.stringify(approved));
       updateLocks();
+      updateProgress();
     });
   });
 
+  resetButton.addEventListener("click", () => {
+    localStorage.removeItem("approvedCourses");
+    location.reload();
+  });
+
   updateLocks();
+  updateProgress();
 });
 
